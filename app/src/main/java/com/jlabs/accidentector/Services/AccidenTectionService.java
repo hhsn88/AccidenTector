@@ -17,7 +17,7 @@ import com.jlabs.accidentector.Location.LocationResolver;
 import com.jlabs.accidentector.Listeners.AccelerometerListener;
 import com.jlabs.accidentector.Listeners.LinearAccelerListener;
 
-public class AccidentDetectionService extends Service {
+public class AccidenTectionService extends Service {
     /**TODO s (unordered):
     * Check driving mode
     * Manage sensor sampling accuracy/frequency according to strong/weak indication of driving

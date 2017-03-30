@@ -7,8 +7,6 @@ import android.util.Log;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
-import java.util.List;
-
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -96,7 +94,7 @@ public class ActivityRecognitionService extends IntentService
     private void _notifyActivityDeteted(String pActivityName)
     {
         Log.i(TAG, pActivityName);
-        Intent intent = new Intent(this, AccidentDetectionService.class)
+        Intent intent = new Intent(this, AccidenTectionService.class)
                 .putExtra("action", pActivityName);
         startService(intent);
     }

@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.BroadcastReceiver;
 
 import com.jlabs.accidentector.R;
-import com.jlabs.accidentector.Services.AccidentDetectionService;
+import com.jlabs.accidentector.Services.AccidenTectionService;
 
 /*Summary:
  *  This class Listens to broadcasts and starts the AccidentorService
@@ -43,7 +43,7 @@ public class AccidentectorInitiationReceiver extends BroadcastReceiver {
     private void StartAccedetectorService(Context context, String action)
     {
         Log.i(TAG, "StartAccedetectorService()");
-        Intent intent = new Intent(context, AccidentDetectionService.class)
+        Intent intent = new Intent(context, AccidenTectionService.class)
                                   .putExtra("action", action);
         context.startService(intent);
     }

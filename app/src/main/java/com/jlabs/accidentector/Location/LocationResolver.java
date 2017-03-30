@@ -6,7 +6,7 @@ import android.content.Context;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.jlabs.accidentector.Services.AccidentDetectionService;
+import com.jlabs.accidentector.Services.AccidenTectionService;
 
 /**
  * This class is the app's location capabilities handler.
@@ -30,7 +30,7 @@ public class LocationResolver
     private GooglePlayServicesLocationResolver mGoogPSLocResolver;
 
     /** C'tor */
-    public LocationResolver(AccidentDetectionService pAccidentectorService)
+    public LocationResolver(AccidenTectionService pAccidentectorService)
     {
         mMyContext = pAccidentectorService;
 
@@ -74,7 +74,7 @@ public class LocationResolver
         }
     }
 
-    public void SetContext(AccidentDetectionService pAccidentectorService)
+    public void SetContext(AccidenTectionService pAccidentectorService)
     {
         mMyContext = pAccidentectorService;
     }
