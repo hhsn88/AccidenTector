@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AccidenTector</string>
+    <string name="StartAccidentector">StartAccidentector</string>
+    <string name="StopAccidentector">StopAccidentector</string>
+</resources>
