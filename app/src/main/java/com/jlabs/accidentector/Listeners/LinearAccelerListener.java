@@ -1,7 +1,9 @@
 package com.jlabs.accidentector.Listeners;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.renderscript.Float3;
 import android.util.Log;
 
 /**
@@ -16,15 +18,6 @@ import android.util.Log;
 
 public class LinearAccelerListener extends ListenerBase {
 
-    public static LinearAccelerListener GetInstance()
-    {
-        if (mInstance == null)
-        {
-            mInstance = new LinearAccelerListener();
-        }
-        return mInstance;
-    }
-    private static LinearAccelerListener mInstance;
     public LinearAccelerListener()
     {
         this.mSensorType = Sensor.TYPE_ACCELEROMETER;
@@ -40,11 +33,26 @@ public class LinearAccelerListener extends ListenerBase {
             float y = pEvent.values[1];
             float z = pEvent.values[2];
             double accel = Math.sqrt(x*x + y*y + z*z);
-            //TODO: improve algo. What about flukes? what about prev samples? what about drivint detection & velocity etc...
-            if (accel >= super.ACCEL_TH)
+
+            // Notify activity so UI is updated
+            notifyActivity(x, y, z, accel);
+
+            if (accel >= ACCEL_TH && mIsDriving)
             {
+                //TODO: improve algo. What about flukes? what about prev samples? what about driving detection & velocity etc...
                 SOS();
             }
         }
+    }
+
+    private void notifyActivity(float pX, float pY, float pZ, double pAccel)
+    {
+        Intent intent = new Intent(COPA_RESULT)
+                .putExtra("DataType", "Sensor")
+                .putExtra(COPA_MESSAGE, new String[] {Float.toString(pX),
+                                                      Float.toString(pY),
+                                                      Float.toString(pZ),
+                                                      Double.toString(pAccel)});
+        mBroadcaster.sendBroadcast(intent);
     }
 }

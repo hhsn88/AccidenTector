@@ -5,14 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.jlabs.accidentector.Activities.MainActivity">
-
+<!--ACCELERATION-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ACCELERATION"
+        android:id="@+id/textViewAccelerationLabel"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:textSize="16sp"/>
     <!-- - - X - - -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="X"
         android:id="@+id/textViewX"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="40dp"
         android:textSize="16sp"/>
     <TextView
@@ -20,7 +28,7 @@
         android:layout_height="wrap_content"
         android:text="Hello World!"
         android:id="@+id/xAcclTB"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="60dp"
         android:textSize="16sp"/>
     <!-- - - Y - - -->
@@ -29,7 +37,7 @@
         android:layout_height="wrap_content"
         android:text="Y"
         android:id="@+id/textViewY"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="100dp"
         android:textSize="16sp"/>
     <TextView
@@ -37,7 +45,7 @@
         android:layout_height="wrap_content"
         android:text="Hello World!"
         android:id="@+id/yAcclTB"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="120dp"
         android:textSize="16sp"/>
     <!-- - - Z - - -->
@@ -46,7 +54,7 @@
         android:layout_height="wrap_content"
         android:text="Z"
         android:id="@+id/textViewZ"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="160dp"
         android:textSize="16sp"/>
     <TextView
@@ -54,7 +62,7 @@
         android:layout_height="wrap_content"
         android:text="Hello World!"
         android:id="@+id/zAcclTB"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="180dp"
         android:textSize="16sp"/>
     <!-- - - TOTAL - - -->
@@ -63,7 +71,7 @@
         android:layout_height="wrap_content"
         android:text="TOTAL"
         android:id="@+id/textViewT"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="220dp"
         android:textSize="16sp"/>
     <TextView
@@ -71,7 +79,7 @@
         android:layout_height="wrap_content"
         android:text="Hello World!"
         android:id="@+id/totalTB"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="240dp"
         android:textSize="16sp"/>
     <!-- - - COUNT - - -->
@@ -80,7 +88,7 @@
         android:layout_height="wrap_content"
         android:text="COUNT"
         android:id="@+id/textViewC"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="280dp"
         android:textSize="16sp"/>
     <TextView
@@ -88,8 +96,135 @@
         android:layout_height="wrap_content"
         android:text="Hello World!"
         android:id="@+id/countTB"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="300dp"
         android:textSize="16sp"/>
+<!--LOCATION-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOCATION"
+        android:id="@+id/textViewLocationLabel"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="20dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <!-- - - Lat - - -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lat"
+        android:id="@+id/textViewLat"
+        android:layout_marginEnd="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginTop="40dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/latTB"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="60dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
+    <!-- - - Lon - - -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lon"
+        android:id="@+id/textViewLon"
+        android:layout_marginEnd="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginTop="100dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/lonTB"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="120dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <!-- - - Vel - - -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vel"
+        android:id="@+id/textViewVel"
+        android:layout_marginEnd="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginTop="160dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/velTB"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="180dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <!-- - - Heading - - -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Heading"
+        android:id="@+id/textViewHeading"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="540dp"
+        android:layout_marginTop="220dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/headingTB"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="240dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <!-- - - COUNT - - -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="COUNT"
+        android:id="@+id/textViewLocC"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="280dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/locCountTB"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="300dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>

@@ -1,16 +1,18 @@
 package com.jlabs.accidentector.Listeners;
 
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import android.util.Log;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
+import android.support.v4.content.LocalBroadcastManager;
+
+import com.jlabs.accidentector.Services.AccidenTectorService;
 
 /**
  * Created by hhsn8 on 3/30/2017.
@@ -19,10 +21,6 @@ import android.hardware.SensorEventListener;
 public abstract class ListenerBase implements SensorEventListener {
 
     protected final String TAG = getClass().getSimpleName();
-
-    private static final long SEC_TO_NS = 1000000000;
-    private static final int  MAX_EVENTS_TIME_DIFF = 10; // [sec]
-    private static final long MAX_EVENTS_TIME_DIFF_NS = MAX_EVENTS_TIME_DIFF * SEC_TO_NS; // [sec]
 
     protected static final double ACCEL_TH = 2.0; //TODO: tentative value, needs research...
 
@@ -33,6 +31,17 @@ public abstract class ListenerBase implements SensorEventListener {
     protected boolean mIsDriving = false; //TODO: implement updating logic (new class? android location service reseaerch needed.)
     protected boolean mIsSensorActive = false; // This shall be set by the sensorListener creator
 
+    static final public String COPA_RESULT =  "com.jlabs.backend.COPAService.DATA_ARRIVED";
+    static final public String COPA_MESSAGE = "com.jlabs.backend.COPAService.DATA_SENSOR";
+    protected Context mMyContext;
+    protected LocalBroadcastManager mBroadcaster;
+
+    public void SetContext(Context pContext)
+    {
+        mMyContext = pContext;
+        mBroadcaster = LocalBroadcastManager.getInstance(mMyContext);
+    }
+
     @Override
     public void onSensorChanged(SensorEvent pEvent)
     {
@@ -41,19 +50,17 @@ public abstract class ListenerBase implements SensorEventListener {
         {
             // Collect Data
             if (Events.size() > 1 &&
-                Events.get(0).timestamp - Events.get(Events.size()-1).timestamp > MAX_EVENTS_TIME_DIFF_NS)
+                Events.get(0).timestamp - Events.get(Events.size()-1).timestamp > AccidenTectorService.MAX_EVENTS_TIME_DIFF_NS)
             {
                 Events.clear();
             }
-            Log.i(TAG, "SensorEvent catched @ " +
-                        DateFormat.getDateTimeInstance().format(new Date()) +
-                        "using: " +
-                        pEvent.sensor.getName());
 
             Events.add(pEvent);
+
             // Process Data (this is done in this.Subclasses)
         }
     }
+
     @Override
     public void onAccuracyChanged(Sensor pSenseor, int pAccu)
     {

@@ -1,12 +1,17 @@
 package com.jlabs.accidentector.Location;
 
-import android.location.LocationManager;
 import android.util.Log;
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.jlabs.accidentector.Services.AccidenTectionService;
+import com.jlabs.accidentector.Services.AccidenTectorService;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This class is the app's location capabilities handler.
@@ -21,6 +26,11 @@ public class LocationResolver
     private static final int  LOCATION_UPDATE_FAST_INTERVAL = 10000; // 10 [s]
     private static final long ACTIVITY_DETECTION_INTERVAL   = 30000; // 30 [s]
 
+    public static final String COPA_RESULT =  "com.jlabs.backend.COPAService.DATA_ARRIVED";
+    public static final String COPA_MESSAGE = "com.jlabs.backend.COPAService.DATA_LOCATION";
+
+    public static List<Location> Locations  = Collections.synchronizedList(new ArrayList<Location>());
+
     private Context mMyContext;
 
     private LocationHandlerType mLocationHandlerType = LocationHandlerType.NA;
@@ -30,10 +40,23 @@ public class LocationResolver
     private GooglePlayServicesLocationResolver mGoogPSLocResolver;
 
     /** C'tor */
-    public LocationResolver(AccidenTectionService pAccidentectorService)
+    public LocationResolver(AccidenTectorService pAccidentectorService)
     {
         mMyContext = pAccidentectorService;
+    }
 
+    public void SetContext(AccidenTectorService pAccidentectorService)
+    {
+        mMyContext = pAccidentectorService;
+    }
+
+    public LocationHandlerType GetLocationHandlerType()
+    {
+        return mLocationHandlerType;
+    }
+
+    public void Init()
+    {
         //TODO: Check Permissions first
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mMyContext)
                 == ConnectionResult.SUCCESS)
@@ -43,9 +66,9 @@ public class LocationResolver
             /* Start Location Services API*/
             mLocationManager = null;
             mGoogPSLocResolver = new GooglePlayServicesLocationResolver(mMyContext,
-                                                           LOCATION_UPDATE_INTERVAL,
-                                                           LOCATION_UPDATE_FAST_INTERVAL,
-                                                           ACTIVITY_DETECTION_INTERVAL);
+                    LOCATION_UPDATE_INTERVAL,
+                    LOCATION_UPDATE_FAST_INTERVAL,
+                    ACTIVITY_DETECTION_INTERVAL);
         }
         else
         {
@@ -57,15 +80,13 @@ public class LocationResolver
             try
             {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                                             (long)LOCATION_UPDATE_INTERVAL,
-                                             (float)0,
-                                             new AndroidLocationManagerResolver());
+                        (long)LOCATION_UPDATE_INTERVAL,
+                        (float)0,
+                        new AndroidLocationManagerResolver());
             }
             catch (SecurityException secEx)
             {
-                Log.d(TAG, secEx.toString());
-                // Handle permissions
-                // ...
+                Log.wtf(TAG, secEx.toString());
             }
             catch (Exception ex)
             {
@@ -73,17 +94,6 @@ public class LocationResolver
             }
         }
     }
-
-    public void SetContext(AccidenTectionService pAccidentectorService)
-    {
-        mMyContext = pAccidentectorService;
-    }
-
-    public LocationHandlerType GetLocationHandlerType()
-    {
-        return mLocationHandlerType;
-    }
-
     public void StartMonitoringTriggers()
     {
         if (mLocationHandlerType == LocationHandlerType.GooglePlayLocationService)

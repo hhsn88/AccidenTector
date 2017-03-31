@@ -1,5 +1,6 @@
 package com.jlabs.accidentector.Listeners;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.util.Log;
@@ -16,16 +17,7 @@ public class AccelerometerListener extends ListenerBase {
     private float[] gravity = new float[3];
     private float[] linear_acceleration = new float[3];
 
-    public static AccelerometerListener GetInstance()
-    {
-        if (mInstance == null)
-        {
-            mInstance = new AccelerometerListener();
-        }
-        return mInstance;
-    }
-    private static AccelerometerListener mInstance;
-    private AccelerometerListener()
+    public AccelerometerListener()
     {
         this.mSensorType = Sensor.TYPE_ACCELEROMETER;
         Log.i(TAG, "Accelerometer Listener created!");
@@ -45,30 +37,15 @@ public class AccelerometerListener extends ListenerBase {
             float z = linear_acceleration[2];
             double accel = Math.sqrt(x*x + y*y + z*z);
 
+            // Notify activity so UI is updated
+            notifyActivity(x, y, z, accel);
+
             if (accel >= ACCEL_TH && mIsDriving)
             {
                 SOS();
             }
         }
     }
-
-//    private void UpdateView()
-//    {/*TEMP*/
-//        if (mMainActivity!= null) {
-//            float x = linear_acceleration[0];
-//            float y = linear_acceleration[1];
-//            float z = linear_acceleration[2];
-//
-//            double accel = Math.sqrt(x * x + y * y + z * z);
-//
-//            mMainActivity.mSensorEventsCount++;
-//            mMainActivity.mTextViewX.setText(String.format(Locale.US, "%1$.3f", x));
-//            mMainActivity.mTextViewY.setText(String.format(Locale.US, "%1$.3f", y));
-//            mMainActivity.mTextViewZ.setText(String.format(Locale.US, "%1$.3f", z));
-//            mMainActivity.mTextViewT.setText(String.format(Locale.US, "%1$.3f", accel));
-//            mMainActivity.mTextViewC.setText(String.valueOf(mMainActivity.mSensorEventsCount));
-//        }
-//    }
 
     private void filterGravity(SensorEvent pEvent)
     {
@@ -92,6 +69,17 @@ public class AccelerometerListener extends ListenerBase {
         linear_acceleration[0] = pEvent.values[0] - gravity[0];
         linear_acceleration[1] = pEvent.values[1] - gravity[1];
         linear_acceleration[2] = pEvent.values[2] - gravity[2];
+    }
+
+    private void notifyActivity(float pX, float pY, float pZ, double pAccel)
+    {
+        Intent intent = new Intent(COPA_RESULT)
+                .putExtra("DataType", "Sensor")
+                .putExtra(COPA_MESSAGE, new String[] {Float.toString(pX),
+                                                      Float.toString(pY),
+                                                      Float.toString(pZ),
+                                                      Double.toString(pAccel)});
+        mBroadcaster.sendBroadcast(intent);
     }
 }
 

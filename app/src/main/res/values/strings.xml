@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">AccidenTector</string>
-    <string name="StartAccidentector">StartAccidentector</string>
-    <string name="StopAccidentector">StopAccidentector</string>
+    <string name="StartAccidentector">com.jlabs.StartAccidentector</string>
+    <string name="StopAccidentector">com.jlabs.StopAccidentector</string>
 </resources>

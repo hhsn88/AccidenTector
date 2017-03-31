@@ -1,6 +1,7 @@
 package com.jlabs.accidentector.Services;
 
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.jlabs.accidentector.Listeners.ListenerBase;
@@ -17,11 +19,15 @@ import com.jlabs.accidentector.Location.LocationResolver;
 import com.jlabs.accidentector.Listeners.AccelerometerListener;
 import com.jlabs.accidentector.Listeners.LinearAccelerListener;
 
-public class AccidenTectionService extends Service {
+public class AccidenTectorService extends Service {
     /**TODO s (unordered):
-    * Check driving mode
-    * Manage sensor sampling accuracy/frequency according to strong/weak indication of driving
-    */
+     * Check driving mode
+     * Manage sensor sampling accuracy/frequency according to strong/weak indication of driving
+     */
+    public static final long SEC_TO_NS = 1000000000;
+    public static final int  MAX_EVENTS_TIME_DIFF = 10; // [sec]
+    public static final long MAX_EVENTS_TIME_DIFF_NS = MAX_EVENTS_TIME_DIFF * SEC_TO_NS; // [sec]
+
     protected final String TAG = getClass().getSimpleName();
 
     private final int SENSOR_DELAY = SensorManager.SENSOR_DELAY_NORMAL;
@@ -44,6 +50,7 @@ public class AccidenTectionService extends Service {
      * Hook method called each time a Started Service is sent an
      * Intent via startService().
      */
+//    public int onStartCommand(Intent intent, int flags, int startId)
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         if (intent != null)
@@ -60,7 +67,13 @@ public class AccidenTectionService extends Service {
                     if (mActiveSensor != null)
                     {
                         mLocationResolver = new LocationResolver(this);
-                        mLocationResolver.StartMonitoringTriggers();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mLocationResolver.Init();
+                                mLocationResolver.StartMonitoringTriggers();
+                            }
+                        }).start();
                     }
                     else
                     {
@@ -138,9 +151,8 @@ public class AccidenTectionService extends Service {
         if (linearAcceler != null)
         {
             /* Use Linear Accelerometer */
-            LinearAccelerListener linearAccelerListener = LinearAccelerListener.GetInstance();
             mActiveSensor = linearAcceler;
-            mActiveSensorListener = linearAccelerListener;
+            mActiveSensorListener = new LinearAccelerListener();
         }
         else
         {
@@ -148,9 +160,8 @@ public class AccidenTectionService extends Service {
             if (accelerometer != null)
             {
                 /* Use Accelerometer */
-                AccelerometerListener accelerometerListener = AccelerometerListener.GetInstance();
                 mActiveSensor = accelerometer;
-                mActiveSensorListener = accelerometerListener;
+                mActiveSensorListener = new AccelerometerListener();
             }
             else
             {
@@ -159,6 +170,7 @@ public class AccidenTectionService extends Service {
                 mActiveSensorListener = null;
             }
         }
+        mActiveSensorListener.SetContext(getApplicationContext());
     }
 
     private void _startSensor()
@@ -171,8 +183,8 @@ public class AccidenTectionService extends Service {
 
         // Make active
         _getSensorManager().registerListener(mActiveSensorListener,
-                                             mActiveSensor,
-                                             SENSOR_DELAY);
+                mActiveSensor,
+                SENSOR_DELAY);
         mActiveSensorListener.SetActive(true);
     }
 

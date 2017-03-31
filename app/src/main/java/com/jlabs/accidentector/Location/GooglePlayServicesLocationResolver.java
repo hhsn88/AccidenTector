@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -15,8 +16,8 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.jlabs.accidentector.Services.AccidenTectorService;
 import com.jlabs.accidentector.Services.ActivityRecognitionService;
-import com.jlabs.accidentector.Utils.PermissionsUtils;
 import com.jlabs.accidentector.Utils.SettingsUtils;
 
 import java.text.DateFormat;
@@ -40,6 +41,8 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
+    protected LocalBroadcastManager mBroadcaster;
+
     public GooglePlayServicesLocationResolver(Context pContext,
                                               int pLocationUpdateInterval,
                                               int pLocationUpdateFastInterval,
@@ -49,6 +52,7 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
         mLocationUpdateInterval = pLocationUpdateInterval;
         mLocationUpdateFastInterval = pLocationUpdateFastInterval;
         mActivityDetectionInterval = pActivityDetectionInterval;
+        mBroadcaster = LocalBroadcastManager.getInstance(mMyContext);
     }
 
     public void Connect()
@@ -107,10 +111,11 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
                 pendingIntent);
 
         // Handle Location API
-        mLocationRequest = CreateLocationRequest(mLocationUpdateInterval, mLocationUpdateFastInterval);
+        mLocationRequest = _createLocationRequest(mLocationUpdateInterval, mLocationUpdateFastInterval);
         // Verify Location settings
         SettingsUtils.VerifyLocationSettings(mLocationRequest, mMyContext, mGoogleApiClient);
         //\ Verify Location setting
+        StartLocationUpdates();
     }
 
     public Location GetLastKnownLocation()
@@ -121,12 +126,12 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
         }
         catch (SecurityException ex)
         {
-            Log.e(TAG, ex.toString());
-            PermissionsUtils.VerifyLocationPermissions(mMyContext);
+            Log.wtf(TAG, ex.toString());
             return null;
         }
     }
-    private void startLocationUpdates()
+
+    public void StartLocationUpdates()
     {//TODO: start this when driving activity is recognised (need to use PendingIntent?)
         try
         {
@@ -136,8 +141,7 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
         }
         catch (SecurityException ex)
         {   // This shouldn't happen since this method is called only after verifying we've got permissions
-            Log.e(TAG, ex.toString());
-            PermissionsUtils.VerifyLocationPermissions(mMyContext);
+            Log.wtf(TAG, ex.toString());
         }
     }
 
@@ -151,7 +155,7 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
         Log.e(TAG, "connection to GoogleApiClient failed. Error: " + connectionResult.getErrorMessage());
     }
 
-    private LocationRequest CreateLocationRequest(int pInterval, int pFastInterval)
+    private LocationRequest _createLocationRequest(int pInterval, int pFastInterval)
     {
         return new LocationRequest()
                 .setInterval(pInterval)
@@ -164,8 +168,37 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
     @Override
     public void onLocationChanged(Location pLocation)
     {
-        mLastLocation = pLocation;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        try
+        {
+            mLastLocation = pLocation;
+            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+
+            notifyActivity(mLastLocation);
+            // Update location array
+            // Collect Data
+            if (LocationResolver.Locations.size() > 1 &&
+                    LocationResolver.Locations.get(0).getTime() -
+                            LocationResolver.Locations.get(LocationResolver.Locations.size()-1).getTime() > AccidenTectorService.MAX_EVENTS_TIME_DIFF_NS)
+            {
+                LocationResolver.Locations.clear();
+            }
+
+            LocationResolver.Locations.add(pLocation);
+        }
+        catch (Exception e)
+        {
+            Log.d(TAG, e.toString());
+        }
+    }
+    private void notifyActivity(Location pLocation)
+    {
+        Intent intent = new Intent(LocationResolver.COPA_RESULT)
+                .putExtra("DataType", "Location")
+                .putExtra(LocationResolver.COPA_MESSAGE, new String[] {Double.toString(pLocation.getLatitude()),
+                                                                       Double.toString(pLocation.getLongitude()),
+                                                                       Float.toString(pLocation.getSpeed()),
+                                                                       Float.toString(pLocation.getBearing())});
+        mBroadcaster.sendBroadcast(intent);
     }
 
     @Override

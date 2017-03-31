@@ -44,7 +44,7 @@ public class ActivityRecognitionService extends IntentService
                 Log.i(TAG, "In Vehicle: " + pMostProbableActivity.getConfidence() );
                 if( pMostProbableActivity.getConfidence() >= ACTIVITY_CONFIDENCE_THRESHOLD )
                 {
-                    _notifyActivityDeteted("Activity_DrivingDetected");
+                    _notifyActivityDetected("Activity_DrivingDetected");
                 }
                 break;
             }
@@ -52,7 +52,7 @@ public class ActivityRecognitionService extends IntentService
                 Log.i(TAG, "On Bicycle: " + pMostProbableActivity.getConfidence() );
                 if( pMostProbableActivity.getConfidence() >= ACTIVITY_CONFIDENCE_THRESHOLD )
                 {
-                    _notifyActivityDeteted("Activity_OnBicycleDetected");
+                    _notifyActivityDetected("Activity_OnBicycleDetected");
                 }
                 break;
             }
@@ -60,7 +60,7 @@ public class ActivityRecognitionService extends IntentService
                 Log.i(TAG, "Walking: " + pMostProbableActivity.getConfidence() );
                 if( pMostProbableActivity.getConfidence() >= ACTIVITY_CONFIDENCE_THRESHOLD )
                 {
-                    _notifyActivityDeteted("Activity_WalkingDetected");
+                    _notifyActivityDetected("Activity_WalkingDetected");
                 }
                 break;
             }
@@ -68,7 +68,7 @@ public class ActivityRecognitionService extends IntentService
                 Log.i(TAG, "Running: " + pMostProbableActivity.getConfidence() );
                 if( pMostProbableActivity.getConfidence() >= ACTIVITY_CONFIDENCE_THRESHOLD )
                 {
-                    _notifyActivityDeteted("Activity_RunningDetected");
+                    _notifyActivityDetected("Activity_RunningDetected");
                 }
                 break;
             }
@@ -91,10 +91,10 @@ public class ActivityRecognitionService extends IntentService
         }
     }
 
-    private void _notifyActivityDeteted(String pActivityName)
+    private void _notifyActivityDetected(String pActivityName)
     {
         Log.i(TAG, pActivityName);
-        Intent intent = new Intent(this, AccidenTectionService.class)
+        Intent intent = new Intent(this, AccidenTectorService.class)
                 .putExtra("action", pActivityName);
         startService(intent);
     }

@@ -1,13 +1,13 @@
 package com.jlabs.accidentector.Receivers;
 
-import static android.content.Intent.ACTION_BOOT_COMPLETED;
 import android.util.Log;
 import android.content.Intent;
 import android.content.Context;
 import android.content.BroadcastReceiver;
 
 import com.jlabs.accidentector.R;
-import com.jlabs.accidentector.Services.AccidenTectionService;
+import com.jlabs.accidentector.Activities.MainActivity;
+import com.jlabs.accidentector.Services.AccidenTectorService;
 
 /*Summary:
  *  This class Listens to broadcasts and starts the AccidentorService
@@ -18,7 +18,9 @@ import com.jlabs.accidentector.Services.AccidenTectionService;
 
 public class AccidentectorInitiationReceiver extends BroadcastReceiver {
 
+    private final boolean IS_START_ACTIVITY = true;
     protected final String TAG = getClass().getSimpleName();
+
 
     public AccidentectorInitiationReceiver()
     {
@@ -30,7 +32,7 @@ public class AccidentectorInitiationReceiver extends BroadcastReceiver {
         Log.i(TAG, "onReceive: received action is: " + intent.getAction());
         switch (intent.getAction())
         {
-            case ACTION_BOOT_COMPLETED:
+            case android.content.Intent.ACTION_BOOT_COMPLETED:
             case "com.jlabs.accidentector.START_DETECTION_MANUAL":
                 StartAccedetectorService(context, context.getString(R.string.StartAccidentector));
                 break;
@@ -43,8 +45,18 @@ public class AccidentectorInitiationReceiver extends BroadcastReceiver {
     private void StartAccedetectorService(Context context, String action)
     {
         Log.i(TAG, "StartAccedetectorService()");
-        Intent intent = new Intent(context, AccidenTectionService.class)
-                                  .putExtra("action", action);
-        context.startService(intent);
+
+        if (IS_START_ACTIVITY)
+        {
+            Intent intent = new Intent(context.getApplicationContext(), MainActivity.class)
+                    .putExtra("action", action);
+            context.startActivity(intent);
+        }
+        else
+        {
+            Intent intent = new Intent(context.getApplicationContext(), AccidenTectorService.class)
+                    .putExtra("action", action);
+            context.startService(intent);
+        }
     }
 }
