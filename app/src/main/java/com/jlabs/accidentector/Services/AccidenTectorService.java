@@ -23,7 +23,7 @@ public class AccidenTectorService extends Service {
      * Manage sensor sampling accuracy/frequency according to strong/weak indication of driving
      */
     public static final long SEC_TO_NS = 1000000000;
-    public static final int  MAX_EVENTS_TIME_DIFF = 10; // [sec]
+    public static final int  MAX_EVENTS_TIME_DIFF = 2; // [sec]
     public static final long MAX_EVENTS_TIME_DIFF_NS = MAX_EVENTS_TIME_DIFF * SEC_TO_NS; // [nano sec]
 
     protected final String TAG = getClass().getSimpleName();
@@ -77,6 +77,19 @@ public class AccidenTectorService extends Service {
                         /* No HW Accelerometer! App cannot run on this device */
                         this.stopSelf();
                         return Service.START_NOT_STICKY;
+                    }
+                }
+                else
+                {
+                    if ( !mActiveSensorListener.IsActive() &&
+                         mLocationResolver != null)
+                    {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mLocationResolver.StartMonitoringTriggers();
+                            }
+                        }).start();
                     }
                 }
             }
@@ -199,27 +212,27 @@ public class AccidenTectorService extends Service {
     }
 
     /** Make Service unstoppable: method 1 */ //TODO: explore other options...!!
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        // TODO Auto-generated method stub
-        Intent restartService = new Intent(getApplicationContext(),
-                this.getClass());
-        restartService.setPackage(getPackageName());
-        PendingIntent restartServicePI = PendingIntent.getService(
-                getApplicationContext(), 1, restartService,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        //Restart the service once it has been killed android
-        AlarmManager alarmService = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() +100, restartServicePI);
-    }
-    /** Make Service unstoppable: method 2 */ //TODO: explore other options...!!
-    @Override
-    public void onDestroy()
-    {
-        Intent intent = new Intent("com.jlabs.accidentector.START_DETECTION_MANUAL");
-        sendBroadcast(intent);
-    }
+//    @Override
+//    public void onTaskRemoved(Intent rootIntent) {
+//        // TODO Auto-generated method stub
+//        Intent restartService = new Intent(getApplicationContext(),
+//                this.getClass());
+//        restartService.setPackage(getPackageName());
+//        PendingIntent restartServicePI = PendingIntent.getService(
+//                getApplicationContext(), 1, restartService,
+//                PendingIntent.FLAG_ONE_SHOT);
+//
+//        //Restart the service once it has been killed android
+//        AlarmManager alarmService = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+//        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() +100, restartServicePI);
+//    }
+//    /** Make Service unstoppable: method 2 */ //TODO: explore other options...!!
+//    @Override
+//    public void onDestroy()
+//    {
+//        Intent intent = new Intent("com.jlabs.accidentector.START_DETECTION_MANUAL");
+//        sendBroadcast(intent);
+//    }
 
     @Override
     public IBinder onBind(Intent intent)

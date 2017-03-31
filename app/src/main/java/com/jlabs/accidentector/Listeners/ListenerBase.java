@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.jlabs.accidentector.Location.LocationResolver;
+import com.jlabs.accidentector.R;
 import com.jlabs.accidentector.Services.AccidenTectorService;
 import com.jlabs.accidentector.Utils.JsonUtils;
 import com.jlabs.accidentector.Utils.NetUtils;
@@ -24,10 +25,10 @@ public abstract class ListenerBase implements SensorEventListener {
 
     protected final String TAG = getClass().getSimpleName();
 
-    protected static final double ACCEL_TH = 6.0; //TODO: tentative value, needs research...
+    protected static final double ACCEL_TH = 4.0; //TODO: tentative value, needs research...
 
     protected static LinkedList<CustomSensorEvent> Events = new LinkedList<>();
-    protected static final int MIN_NUM_OF_CON_SAMPLES = 10;
+    protected static final int MIN_NUM_OF_CON_SAMPLES = 4;
     protected int mNumOfConcicutiveSamples;
 
     protected int mSensorType = -1;
@@ -96,10 +97,12 @@ public abstract class ListenerBase implements SensorEventListener {
     {
         if ( !mIsSent )
         {
-            String accData = JsonUtils.packData(LocationResolver.Locations, Events);
-            Log.i(TAG, accData);
-            new NetUtils().SendAccidentData(accData);
+            String accidentData = JsonUtils.packData(LocationResolver.Locations, Events);
+            new NetUtils().execute(accidentData);
             mIsSent = true;
+
+            // Stop detection
+//            stopDetection();
         }
     }
 
@@ -122,6 +125,17 @@ public abstract class ListenerBase implements SensorEventListener {
                         Double.toString(pAccel),
                         Long.toString(pTimeStamp)});
         mBroadcaster.sendBroadcast(intent);
+    }
+
+    protected void stopDetection()
+    {
+        try {
+            Intent intent=new Intent(mMyContext.getApplicationContext(),AccidenTectorService.class)
+                    .putExtra("action",mMyContext.getString(R.string.StopAccidentector));
+            mMyContext.startService(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

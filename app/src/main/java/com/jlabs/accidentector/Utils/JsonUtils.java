@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.jlabs.accidentector.Listeners.CustomSensorEvent;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,32 +17,44 @@ import java.util.List;
 public class JsonUtils {
     protected static final String TAG = "JsonUtils";
     public static String packData(List<Location> locations, List<CustomSensorEvent> sensorEvents){
-        try{
+        try
+        {
             JSONObject globalJO = new JSONObject();
-            for(int i=0; i<locations.size(); i++){
+            JSONObject locsJO = new JSONObject();
+            for(int i=0; i<Math.min(locations.size(), 10); i++){
                 JSONObject jo = new JSONObject();
                 Location theLocation = locations.get(i);
-                String ii = Integer.toBinaryString(i);
-                jo.put("longitude_fld" + "_" + ii,theLocation.getLongitude());
-                jo.put("latitude_fld" + "_" + ii, theLocation.getLatitude());
-                jo.put("speed_fld" + "_" + ii,    theLocation.getSpeed());
-                jo.put("bearing_fld" + "_" + ii,  theLocation.getBearing());
-                jo.put("accts_fld" +" _" + ii,    theLocation.getTime());
+                String ii = Integer.toString(i);
 
-                globalJO.put("coodr_fld" +" _" + ii,jo);
+                jo.put("lon_fld" + "_" + ii,   theLocation.getLongitude());
+                jo.put("lat_fld" + "_" + ii,   theLocation.getLatitude());
+                jo.put("spd_fld" + "_" + ii,   theLocation.getSpeed());
+                jo.put("brng_fld" + "_" + ii,  theLocation.getBearing());
+                jo.put("locTS_fld" +" _" + ii, theLocation.getTime());
+
+                locsJO.put("Coodr_fld" +" _" + ii, jo);
             }
 
-            for(int i=0; i<sensorEvents.size(); i++) {
+            JSONObject accsJO = new JSONObject();
+            for(int i=0; i<Math.min(sensorEvents.size(),10); i++) {
                 JSONObject jo = new JSONObject();
                 CustomSensorEvent thesensorEvent = sensorEvents.get(i);
-                String ii = Integer.toBinaryString(i);
-                jo.accumulate("accelerationX_fld"+"_"+ii, Float.toString(sensorEvents.get(i).values[0])+"_"+ii);
-                jo.accumulate("accelerationY_fld"+"_"+ii, Float.toString(sensorEvents.get(i).values[1])+"_"+ii);
-                jo.accumulate("accelerationZ_fld"+"_"+ii, Float.toString(sensorEvents.get(i).values[2])+"_"+ii);
-                jo.accumulate("locTimeStamp_fld"+"_"+ii,  Float.toString(sensorEvents.get(i).timeStamp)+"_"+ii);
+                String ii = Integer.toString(i);
+
+                jo.put("accX_fld" + "_" + ii, thesensorEvent.values[0]);
+                jo.put("accY_fld" + "_" + ii, thesensorEvent.values[1]);
+                jo.put("accZ_fld" + "_" + ii, thesensorEvent.values[2]);
+                jo.put("accTS_fld" + "_" + ii, thesensorEvent.timeStamp);
+
+                accsJO.put("Acc_fld" +" _" + ii, jo);
             }
 
-            return globalJO.toString();
+            globalJO.put("Locations", locsJO);
+            globalJO.put("Accelerations", accsJO);
+
+            String jsonString = globalJO.toString();
+            Log.i(TAG, jsonString);
+            return jsonString;
 
         }catch(JSONException e){
             Log.e(TAG, e.toString());
@@ -52,6 +63,5 @@ public class JsonUtils {
             Log.e(TAG, e.toString());
             return null;
         }
-
     }
 }
