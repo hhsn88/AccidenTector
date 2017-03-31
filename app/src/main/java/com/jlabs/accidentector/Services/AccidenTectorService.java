@@ -23,12 +23,12 @@ public class AccidenTectorService extends Service {
      * Manage sensor sampling accuracy/frequency according to strong/weak indication of driving
      */
     public static final long SEC_TO_NS = 1000000000;
-    public static final int  MAX_EVENTS_TIME_DIFF = 2; // [sec]
+    public static final int  MAX_EVENTS_TIME_DIFF = 4; // [sec]
     public static final long MAX_EVENTS_TIME_DIFF_NS = MAX_EVENTS_TIME_DIFF * SEC_TO_NS; // [nano sec]
 
     protected final String TAG = getClass().getSimpleName();
 
-    private final int SENSOR_DELAY = SensorManager.SENSOR_DELAY_NORMAL;
+    private final int SENSOR_DELAY = 10000000;//SensorManager.SENSOR_DELAY_UI;
 
     /** Sensors */
     private SensorManager mSensorManager;

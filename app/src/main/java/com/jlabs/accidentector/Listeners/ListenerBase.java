@@ -28,7 +28,7 @@ public abstract class ListenerBase implements SensorEventListener {
     protected static final double ACCEL_TH = 4.0; //TODO: tentative value, needs research...
 
     protected static LinkedList<CustomSensorEvent> Events = new LinkedList<>();
-    protected static final int MIN_NUM_OF_CON_SAMPLES = 4;
+    protected static final int MIN_NUM_OF_CON_SAMPLES = 6;
     protected int mNumOfConcicutiveSamples;
 
     protected int mSensorType = -1;
