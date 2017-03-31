@@ -1,7 +1,6 @@
 package com.jlabs.accidentector.Services;
 
 import android.app.AlarmManager;
-import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -10,7 +9,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.jlabs.accidentector.Listeners.ListenerBase;
@@ -26,7 +24,7 @@ public class AccidenTectorService extends Service {
      */
     public static final long SEC_TO_NS = 1000000000;
     public static final int  MAX_EVENTS_TIME_DIFF = 10; // [sec]
-    public static final long MAX_EVENTS_TIME_DIFF_NS = MAX_EVENTS_TIME_DIFF * SEC_TO_NS; // [sec]
+    public static final long MAX_EVENTS_TIME_DIFF_NS = MAX_EVENTS_TIME_DIFF * SEC_TO_NS; // [nano sec]
 
     protected final String TAG = getClass().getSimpleName();
 
@@ -123,7 +121,7 @@ public class AccidenTectorService extends Service {
         switch (pDetectedActivity)
         {
             case "Activity_DrivingDetected":
-
+                _startSensor();
                 break;
             case "Activity_OnBicycleDetected":
             case "Activity_WalkingDetected":

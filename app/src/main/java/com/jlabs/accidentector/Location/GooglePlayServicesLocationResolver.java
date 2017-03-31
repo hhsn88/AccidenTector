@@ -16,6 +16,7 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.jlabs.accidentector.Listeners.ListenerBase;
 import com.jlabs.accidentector.Services.AccidenTectorService;
 import com.jlabs.accidentector.Services.ActivityRecognitionService;
 import com.jlabs.accidentector.Utils.SettingsUtils;
@@ -36,6 +37,8 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
     private int  mLocationUpdateInterval;     // [ms]
     private int  mLocationUpdateFastInterval; // [ms]
     private long mActivityDetectionInterval;  // [ms]
+
+    private static final int START_MONITORING_TH = 10; // [m/s]
 
     private Context mMyContext;
     private GoogleApiClient mGoogleApiClient;
@@ -177,21 +180,25 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
             // Update location array
             // Collect Data
             if (LocationResolver.Locations.size() > 1 &&
-                    LocationResolver.Locations.get(0).getTime() -
-                            LocationResolver.Locations.get(LocationResolver.Locations.size()-1).getTime() > AccidenTectorService.MAX_EVENTS_TIME_DIFF_NS)
+                LocationResolver.Locations.size() >= AccidenTectorService.MAX_EVENTS_TIME_DIFF)
             {
-                LocationResolver.LastAddedIdx = 0;
+                if (!ListenerBase.IsSendSOS ||
+                    LocationResolver.Locations.size() >= 2 * AccidenTectorService.MAX_EVENTS_TIME_DIFF)
+                {
+                    LocationResolver.Locations.remove(0);
+                }
             }
+            LocationResolver.Locations.add(pLocation);
+            Log.i(TAG, "Location: " + Integer.toString(LocationResolver.Locations.size()));
 
-            if (LocationResolver.Locations.size() > LocationResolver.LastAddedIdx)
+            if (pLocation.getSpeed() > START_MONITORING_TH)
             {
-                LocationResolver.Locations.set(LocationResolver.LastAddedIdx, pLocation);
+                //TODO: TEMP: send driving detected
+                Log.i(TAG, "Activity_DrivingDetected_MANUAL");
+                Intent intent = new Intent(mMyContext.getApplicationContext(), AccidenTectorService.class)
+                        .putExtra("action", "Activity_DrivingDetected");
+                mMyContext.startService(intent);
             }
-            else
-            {
-                LocationResolver.Locations.add(pLocation);
-            }
-            LocationResolver.LastAddedIdx++;
         }
         catch (Exception e)
         {
@@ -205,7 +212,8 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
                 .putExtra(LocationResolver.COPA_MESSAGE, new String[] {Double.toString(pLocation.getLatitude()),
                                                                        Double.toString(pLocation.getLongitude()),
                                                                        Float.toString(pLocation.getSpeed()),
-                                                                       Float.toString(pLocation.getBearing())});
+                                                                       Float.toString(pLocation.getBearing()),
+                                                                       Long.toString(pLocation.getTime())});
         mBroadcaster.sendBroadcast(intent);
     }
 

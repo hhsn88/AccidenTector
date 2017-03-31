@@ -5,6 +5,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.util.Log;
 
+import com.jlabs.accidentector.Services.AccidenTectorService;
+
 /*Summary:
  *  This class handles Accelerometer events.
  *  It's also responsible for filtering the Accelerometer samples
@@ -38,9 +40,24 @@ public class AccelerometerListener extends ListenerBase {
             double accel = Math.sqrt(x*x + y*y + z*z);
 
             // Notify activity so UI is updated
-            notifyActivity(x, y, z, accel);
+            notifyActivity(x, y, z, accel, pEvent.timestamp);
 
-            if (accel >= ACCEL_TH && mIsDriving)
+            if (accel >= ACCEL_TH)
+            {
+                mNumOfConcicutiveSamples++;
+            }
+            else
+            {
+                mNumOfConcicutiveSamples = 0;
+            }
+
+            if (mNumOfConcicutiveSamples > MIN_NUM_OF_CON_SAMPLES)
+            {
+                IsSendSOS = true;
+            }
+
+            if (Events.size() > 1 && IsSendSOS &&
+                Events.getLast().timeStamp - Events.getFirst().timeStamp > 2 * AccidenTectorService.MAX_EVENTS_TIME_DIFF_NS)
             {
                 SOS();
             }
@@ -60,7 +77,7 @@ public class AccelerometerListener extends ListenerBase {
         // Alpha is calculated as t / (t + dT),
         // where t is the low-pass filter's time-constant and
         // dT is the event delivery rate.
-        final float alpha = 0.8f;
+        final float alpha = 0.7f;
         // Isolate the force of gravity with the low-pass filter.
         gravity[0] = alpha * gravity[0] + (1 - alpha) * pEvent.values[0];
         gravity[1] = alpha * gravity[1] + (1 - alpha) * pEvent.values[1];
@@ -69,17 +86,6 @@ public class AccelerometerListener extends ListenerBase {
         linear_acceleration[0] = pEvent.values[0] - gravity[0];
         linear_acceleration[1] = pEvent.values[1] - gravity[1];
         linear_acceleration[2] = pEvent.values[2] - gravity[2];
-    }
-
-    private void notifyActivity(float pX, float pY, float pZ, double pAccel)
-    {
-        Intent intent = new Intent(COPA_RESULT)
-                .putExtra("DataType", "Sensor")
-                .putExtra(COPA_MESSAGE, new String[] {Float.toString(pX),
-                                                      Float.toString(pY),
-                                                      Float.toString(pZ),
-                                                      Double.toString(pAccel)});
-        mBroadcaster.sendBroadcast(intent);
     }
 }
 

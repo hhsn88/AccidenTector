@@ -65,11 +65,11 @@
         android:layout_marginLeft="40dp"
         android:layout_marginTop="180dp"
         android:textSize="16sp"/>
-    <!-- - - TOTAL - - -->
+    <!-- - - TOTAL ACC - - -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TOTAL"
+        android:text="TOTAL ACC"
         android:id="@+id/textViewT"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="220dp"
@@ -82,12 +82,12 @@
         android:layout_marginLeft="40dp"
         android:layout_marginTop="240dp"
         android:textSize="16sp"/>
-    <!-- - - COUNT - - -->
+    <!-- - - TIME STAMP - - -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="COUNT"
-        android:id="@+id/textViewC"
+        android:text="TIME STAMP"
+        android:id="@+id/textViewTS"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="280dp"
         android:textSize="16sp"/>
@@ -95,9 +95,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"
-        android:id="@+id/countTB"
+        android:id="@+id/timestampTB"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="300dp"
+        android:textSize="16sp"/>
+    <!-- - - COUNT - - -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="COUNT"
+        android:id="@+id/textViewC"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="340dp"
+        android:textSize="16sp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/countTB"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="360dp"
         android:textSize="16sp"/>
 <!--LOCATION-->
     <TextView
@@ -204,6 +221,29 @@
         android:textSize="16sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+    <!-- - - TIME STAMP - - -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TIME STAMO"
+        android:id="@+id/textViewLocTS"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="540dp"
+        android:layout_marginTop="280dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/locTimestampTB"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="300dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
     <!-- - - COUNT - - -->
     <TextView
         android:layout_width="wrap_content"
@@ -212,7 +252,7 @@
         android:id="@+id/textViewLocC"
         android:layout_marginEnd="40dp"
         android:layout_marginRight="40dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="340dp"
         android:textSize="16sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
@@ -223,7 +263,7 @@
         android:id="@+id/locCountTB"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="360dp"
         android:textSize="16sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />

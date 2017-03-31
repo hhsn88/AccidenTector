@@ -23,22 +23,27 @@ public class MainActivity extends Activity {
 
     protected final String TAG = getClass().getSimpleName();
 
+    static int mAccNumOfSamples = 0;
+    static int mLocNumOfSamples = 0;
+
     private BroadcastReceiver mUiUpdatesReceiver;
 
-    private int mSensorEventsCount;
-    private int mLocationEventsCount;
     // Acc
     public TextView mTextViewX;
     public TextView mTextViewY;
     public TextView mTextViewZ;
     public TextView mTextViewC;
     public TextView mTextViewT;
+    public TextView mTextViewTS;
+
     // Loc
     public TextView mTextViewLat;
     public TextView mTextViewLon;
     public TextView mTextViewVel;
     public TextView mTextViewHeading;
     public TextView mTextViewLocT;
+    public TextView mTextViewLocTS;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -82,66 +87,74 @@ public class MainActivity extends Activity {
         mTextViewY = (TextView)findViewById(R.id.yAcclTB);
         mTextViewZ = (TextView)findViewById(R.id.zAcclTB);
         mTextViewC = (TextView)findViewById(R.id.countTB);
+        mTextViewTS = (TextView)findViewById(R.id.timestampTB);
         mTextViewT = (TextView)findViewById(R.id.totalTB);
         // Loc
         mTextViewLat = (TextView)findViewById(R.id.latTB);
         mTextViewLon = (TextView)findViewById(R.id.lonTB);
         mTextViewVel = (TextView)findViewById(R.id.velTB);
         mTextViewHeading = (TextView)findViewById(R.id.headingTB);
+        mTextViewLocTS = (TextView)findViewById(R.id.locTimestampTB);
         mTextViewLocT = (TextView)findViewById(R.id.locCountTB);
     }
 
     private void _updateLocViews(String[] pLocValues)
     {
-        double lat = Double.parseDouble(pLocValues[0]);
-        double lon = Double.parseDouble(pLocValues[1]);
-        float vel = Float.parseFloat(pLocValues[2]);
-        float heading = Float.parseFloat(pLocValues[3]);
-
-        mLocationEventsCount++;
-        mTextViewLat.setText(String.format(Locale.US, "%1$.6f", lat));
-        mTextViewLon.setText(String.format(Locale.US, "%1$.6f", lon));
-        mTextViewVel.setText(String.format(Locale.US, "%1$.3f", vel));
-        mTextViewHeading.setText(String.format(Locale.US, "%1$.3f", heading));
-        mTextViewLocT.setText(String.valueOf(mLocationEventsCount));
+        try {
+            double lat = Double.parseDouble(pLocValues[0]);
+            double lon = Double.parseDouble(pLocValues[1]);
+            float vel = Float.parseFloat(pLocValues[2]);
+            float heading = Float.parseFloat(pLocValues[3]);
+            long ts = Long.parseLong(pLocValues[4]);
+            mLocNumOfSamples++;
+            mTextViewLat.setText(String.format(Locale.US, "%1$.6f", lat));
+            mTextViewLon.setText(String.format(Locale.US, "%1$.6f", lon));
+            mTextViewVel.setText(String.format(Locale.US, "%1$.3f", vel));
+            mTextViewHeading.setText(String.format(Locale.US, "%1$.3f", heading));
+            mTextViewLocT.setText(String.valueOf(mLocNumOfSamples/2));
+            mTextViewLocTS.setText(String.valueOf(ts));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
     private void _updateAccViews(String[] pAccValues)
     {
-        float x = Float.parseFloat(pAccValues[0]);
-        float y = Float.parseFloat(pAccValues[1]);
-        float z = Float.parseFloat(pAccValues[2]);
-        double accel = Double.parseDouble(pAccValues[3]);
-
-        mSensorEventsCount++;
-        mTextViewX.setText(String.format(Locale.US, "%1$.3f", x));
-        mTextViewY.setText(String.format(Locale.US, "%1$.3f", y));
-        mTextViewZ.setText(String.format(Locale.US, "%1$.3f", z));
-        mTextViewT.setText(String.format(Locale.US, "%1$.3f", accel));
-        mTextViewC.setText(String.valueOf(mSensorEventsCount));
+        try {
+            float x = Float.parseFloat(pAccValues[0]);
+            float y = Float.parseFloat(pAccValues[1]);
+            float z = Float.parseFloat(pAccValues[2]);
+            double accel = Double.parseDouble(pAccValues[3]);
+            long ts = Long.parseLong(pAccValues[4]);
+            mAccNumOfSamples++;
+            mTextViewX.setText(String.format(Locale.US, "%1$.3f", x));
+            mTextViewY.setText(String.format(Locale.US, "%1$.3f", y));
+            mTextViewZ.setText(String.format(Locale.US, "%1$.3f", z));
+            mTextViewT.setText(String.format(Locale.US, "%1$.3f", accel));
+            mTextViewC.setText(String.valueOf(mAccNumOfSamples));
+            mTextViewTS.setText(String.valueOf(ts));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onStart()
     {
-        try
-        {
+        try {
             Log.i(TAG, "onPause()");
             super.onStart();
             LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver((mUiUpdatesReceiver),
                     new IntentFilter(ListenerBase.COPA_RESULT));
             LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver((mUiUpdatesReceiver),
                     new IntentFilter(LocationResolver.COPA_RESULT));
-        }
-        catch (Exception e)
-        {
-            Log.d(TAG, e.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     @Override
     protected void onResume()
     {
-        try
-        {
+        try {
             Log.i(TAG, "onResume()");
             super.onResume();
 
@@ -150,14 +163,13 @@ public class MainActivity extends Activity {
                 // We have location permissions :D
                 _startManualDetection();
             }
-        }
-        catch (Exception e)
-        {
-            Log.d(TAG, e.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         Log.i(TAG, "onPause()");
         super.onPause();
     }
@@ -171,12 +183,11 @@ public class MainActivity extends Activity {
     private void _startManualDetection()
     {
         try {
-            Intent intent = new Intent(getApplicationContext(), AccidenTectorService.class)
-                    .putExtra("action", getString(R.string.StartAccidentector));
+            Intent intent=new Intent(getApplicationContext(),AccidenTectorService.class)
+                .putExtra("action",getString(R.string.StartAccidentector));
             this.startService(intent);
-        }
-        catch (Exception e) {
-            Log.d(TAG, e.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -184,31 +195,22 @@ public class MainActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults)
     {
-        try
+        switch (requestCode)
         {
-            switch (requestCode)
-            {
-                case PermissionsUtils.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
-                    {
-                    // If request is cancelled, the result arrays are empty.
-                    if (grantResults.length > 0
-                            && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    {
-                        // We have location permissions :D
-                        _startManualDetection();
-                    }
-                    else
-                    {
-                        // permission denied, boo! Disable the
-                        // functionality that depends on this permission.
-                    }
-                    return;
+            case PermissionsUtils.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    // We have location permissions :D
+                    _startManualDetection();
                 }
-            }
-        }
-        catch (Exception e)
-        {
-            Log.d(TAG, e.toString());
+                else
+                {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
         }
     }
 }

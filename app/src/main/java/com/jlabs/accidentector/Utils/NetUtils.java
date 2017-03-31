@@ -21,10 +21,15 @@ import java.net.URL;
 public class NetUtils extends AsyncTask<String, String, String> {
     protected final String TAG = getClass().getSimpleName();
     private final String url = "http://rsossl.net23.net";
-    private final String command = "?SET=";
+    private final String command = "?side=client&";
 
-    public NetUtils() {
-        //set context variables if required
+    public NetUtils()
+    {
+    }
+
+    public void SendAccidentData(String pAccData)
+    {
+        doInBackground(pAccData);
     }
 
     @Override
@@ -32,11 +37,10 @@ public class NetUtils extends AsyncTask<String, String, String> {
         super.onPreExecute();
     }
 
-
     @Override
     protected String doInBackground(String... params) {
 
-        String urlString = url + command ;// URL to call
+        String urlString = url + command + "json=";// URL to call
         for (int i = 0; i < params.length; i++) {
             urlString += params[i];
         }
@@ -60,7 +64,6 @@ public class NetUtils extends AsyncTask<String, String, String> {
             return e.getMessage();
 
         }
-        JsonUtils.packData(LocationResolver.Locations, ListenerBase.Events);
         try {
             resultToDisplay = IOUtils.toString(in, "UTF-8");
             //to [convert][1] byte stream to a string

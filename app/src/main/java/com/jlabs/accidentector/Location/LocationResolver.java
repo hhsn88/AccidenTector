@@ -9,6 +9,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.jlabs.accidentector.Services.AccidenTectorService;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +30,7 @@ public class LocationResolver
     public static final String COPA_RESULT =  "com.jlabs.backend.COPAService.DATA_ARRIVED";
     public static final String COPA_MESSAGE = "com.jlabs.backend.COPAService.DATA_LOCATION";
 
-    public static List<Location> Locations  = Collections.synchronizedList(new ArrayList<Location>());
-    public static int LastAddedIdx;
+    public static LinkedList<Location> Locations  = new LinkedList<>();
 
     private Context mMyContext;
 

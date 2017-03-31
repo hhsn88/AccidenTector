@@ -3,8 +3,9 @@ package com.jlabs.accidentector.Listeners;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.renderscript.Float3;
 import android.util.Log;
+
+import com.jlabs.accidentector.Services.AccidenTectorService;
 
 /**
  * Created by hhsn8 on 3/30/2017.
@@ -35,24 +36,27 @@ public class LinearAccelerListener extends ListenerBase {
             double accel = Math.sqrt(x*x + y*y + z*z);
 
             // Notify activity so UI is updated
-            notifyActivity(x, y, z, accel);
+            notifyActivity(x, y, z, accel, pEvent.timestamp);
 
-            if (accel >= ACCEL_TH && mIsDriving)
+            if (accel >= ACCEL_TH)
             {
-                //TODO: improve algo. What about flukes? what about prev samples? what about driving detection & velocity etc...
+                mNumOfConcicutiveSamples++;
+            }
+            else
+            {
+                mNumOfConcicutiveSamples = 0;
+            }
+
+            if (mNumOfConcicutiveSamples > MIN_NUM_OF_CON_SAMPLES)
+            {
+                IsSendSOS = true;
+            }
+
+            if (Events.size() > 1 && IsSendSOS &&
+                    Events.getLast().timeStamp - Events.getFirst().timeStamp > 2 * AccidenTectorService.MAX_EVENTS_TIME_DIFF_NS)
+            {
                 SOS();
             }
         }
-    }
-
-    private void notifyActivity(float pX, float pY, float pZ, double pAccel)
-    {
-        Intent intent = new Intent(COPA_RESULT)
-                .putExtra("DataType", "Sensor")
-                .putExtra(COPA_MESSAGE, new String[] {Float.toString(pX),
-                                                      Float.toString(pY),
-                                                      Float.toString(pZ),
-                                                      Double.toString(pAccel)});
-        mBroadcaster.sendBroadcast(intent);
     }
 }
