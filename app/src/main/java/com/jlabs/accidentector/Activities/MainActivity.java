@@ -42,30 +42,37 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        Log.i(TAG, "onCreate()");
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        InitViews();
-        // Init UI update Receiver
-        mUiUpdatesReceiver = new BroadcastReceiver()
+        try
         {
-            @Override
-            public void onReceive(Context context, Intent intent)
+            Log.i(TAG, "onCreate()");
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            InitViews();
+            // Init UI update Receiver
+            mUiUpdatesReceiver = new BroadcastReceiver()
             {
-                String[] dataType = intent.getStringArrayExtra("DataType");
+                @Override
+                public void onReceive(Context context, Intent intent)
+                {
+                    String dataType = intent.getStringExtra("DataType");
 
-                if (dataType.equals("Location"))
-                {
-                    String[] accValues = intent.getStringArrayExtra(LocationResolver.COPA_MESSAGE);
-                    _updateLocViews(accValues);
+                    if (dataType.equals("Location"))
+                    {
+                        String[] accValues = intent.getStringArrayExtra(LocationResolver.COPA_MESSAGE);
+                        _updateLocViews(accValues);
+                    }
+                    else
+                    {
+                        String[] accValues = intent.getStringArrayExtra(ListenerBase.COPA_MESSAGE);
+                        _updateAccViews(accValues);
+                    }
                 }
-                else
-                {
-                    String[] accValues = intent.getStringArrayExtra(ListenerBase.COPA_MESSAGE);
-                    _updateAccViews(accValues);
-                }
-            }
-        };
+            };
+        }
+        catch (Exception e)
+        {
+            Log.d(TAG, e.toString());
+        }
     }
 
     private void InitViews()
@@ -92,12 +99,11 @@ public class MainActivity extends Activity {
         float heading = Float.parseFloat(pLocValues[3]);
 
         mLocationEventsCount++;
-        mTextViewX.setText(String.format(Locale.US, "%1$.3f", lat));
-        mTextViewY.setText(String.format(Locale.US, "%1$.3f", lon));
-        mTextViewZ.setText(String.format(Locale.US, "%1$.3f", vel));
-        mTextViewT.setText(String.format(Locale.US, "%1$.3f", heading));
-        mTextViewC.setText(String.valueOf(mLocationEventsCount));
-
+        mTextViewLat.setText(String.format(Locale.US, "%1$.6f", lat));
+        mTextViewLon.setText(String.format(Locale.US, "%1$.6f", lon));
+        mTextViewVel.setText(String.format(Locale.US, "%1$.3f", vel));
+        mTextViewHeading.setText(String.format(Locale.US, "%1$.3f", heading));
+        mTextViewLocT.setText(String.valueOf(mLocationEventsCount));
     }
     private void _updateAccViews(String[] pAccValues)
     {
@@ -117,23 +123,37 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart()
     {
-        Log.i(TAG, "onPause()");
-        super.onStart();
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver((mUiUpdatesReceiver),
-                new IntentFilter(ListenerBase.COPA_RESULT));
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver((mUiUpdatesReceiver),
-                new IntentFilter(LocationResolver.COPA_RESULT));
+        try
+        {
+            Log.i(TAG, "onPause()");
+            super.onStart();
+            LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver((mUiUpdatesReceiver),
+                    new IntentFilter(ListenerBase.COPA_RESULT));
+            LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver((mUiUpdatesReceiver),
+                    new IntentFilter(LocationResolver.COPA_RESULT));
+        }
+        catch (Exception e)
+        {
+            Log.d(TAG, e.toString());
+        }
     }
     @Override
     protected void onResume()
     {
-        Log.i(TAG, "onResume()");
-        super.onResume();
-
-        if (PermissionsUtils.VerifyLocationPermissions(this))
+        try
         {
-            // We have location permissions :D
-            _startManualDetection();
+            Log.i(TAG, "onResume()");
+            super.onResume();
+
+            if (PermissionsUtils.VerifyLocationPermissions(this))
+            {
+                // We have location permissions :D
+                _startManualDetection();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.d(TAG, e.toString());
         }
     }
     @Override
@@ -150,33 +170,45 @@ public class MainActivity extends Activity {
 
     private void _startManualDetection()
     {
-        Intent intent = new Intent(getApplicationContext(), AccidenTectorService.class)
-                .putExtra("action", getString(R.string.StartAccidentector));
-        this.startService(intent);
+        try {
+            Intent intent = new Intent(getApplicationContext(), AccidenTectorService.class)
+                    .putExtra("action", getString(R.string.StartAccidentector));
+            this.startService(intent);
+        }
+        catch (Exception e) {
+            Log.d(TAG, e.toString());
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults)
     {
-        switch (requestCode)
+        try
         {
-            case PermissionsUtils.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
-                {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    // We have location permissions :D
-                    _startManualDetection();
+            switch (requestCode)
+            {
+                case PermissionsUtils.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
+                    {
+                    // If request is cancelled, the result arrays are empty.
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    {
+                        // We have location permissions :D
+                        _startManualDetection();
+                    }
+                    else
+                    {
+                        // permission denied, boo! Disable the
+                        // functionality that depends on this permission.
+                    }
+                    return;
                 }
-                else
-                {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
             }
+        }
+        catch (Exception e)
+        {
+            Log.d(TAG, e.toString());
         }
     }
 }

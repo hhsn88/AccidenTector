@@ -29,6 +29,11 @@
             android:exported="true">
             <!-- android:directBootAware="true" -->
         </service>
+        <service
+            android:name=".Services.ActivityRecognitionService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
 
         <receiver
             android:name=".Receivers.AccidentectorInitiationReceiver"

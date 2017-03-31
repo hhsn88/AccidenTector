@@ -25,6 +25,7 @@ public abstract class ListenerBase implements SensorEventListener {
     protected static final double ACCEL_TH = 2.0; //TODO: tentative value, needs research...
 
     protected static List<SensorEvent> Events = Collections.synchronizedList(new ArrayList<SensorEvent>());
+    protected static int LastAddedIdx;
 
     protected int mSensorType = -1;
     protected boolean mIsProcessData = true;
@@ -52,11 +53,19 @@ public abstract class ListenerBase implements SensorEventListener {
             if (Events.size() > 1 &&
                 Events.get(0).timestamp - Events.get(Events.size()-1).timestamp > AccidenTectorService.MAX_EVENTS_TIME_DIFF_NS)
             {
-                Events.clear();
+                LastAddedIdx = 0;
             }
 
-            Events.add(pEvent);
+            if (Events.size() > LastAddedIdx)
+            {
+                Events.set(LastAddedIdx, pEvent);
+            }
+            else
+            {
+                Events.add(pEvent);
+            }
 
+            LastAddedIdx++;
             // Process Data (this is done in this.Subclasses)
         }
     }

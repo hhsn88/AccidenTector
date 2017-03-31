@@ -22,14 +22,15 @@ import java.util.Collections;
 public class LocationResolver
 {
     private final String TAG = getClass().getSimpleName();
-    private static final int  LOCATION_UPDATE_INTERVAL      = 10000; // 10 [s]
-    private static final int  LOCATION_UPDATE_FAST_INTERVAL = 10000; // 10 [s]
-    private static final long ACTIVITY_DETECTION_INTERVAL   = 30000; // 30 [s]
+    private static final int  LOCATION_UPDATE_INTERVAL      = 1000; // 10 [s]
+    private static final int  LOCATION_UPDATE_FAST_INTERVAL = 1000; // 10 [s]
+    private static final long ACTIVITY_DETECTION_INTERVAL   = 1000; // 30 [s]
 
     public static final String COPA_RESULT =  "com.jlabs.backend.COPAService.DATA_ARRIVED";
     public static final String COPA_MESSAGE = "com.jlabs.backend.COPAService.DATA_LOCATION";
 
     public static List<Location> Locations  = Collections.synchronizedList(new ArrayList<Location>());
+    public static int LastAddedIdx;
 
     private Context mMyContext;
 

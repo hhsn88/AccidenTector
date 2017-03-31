@@ -50,7 +50,6 @@ public class AccidenTectorService extends Service {
      * Hook method called each time a Started Service is sent an
      * Intent via startService().
      */
-//    public int onStartCommand(Intent intent, int flags, int startId)
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         if (intent != null)

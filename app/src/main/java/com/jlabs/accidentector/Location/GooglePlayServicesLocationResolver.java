@@ -98,7 +98,7 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
     public void onConnected(@Nullable Bundle bundle)
     {
         /* Handle Activity API *///TODO: request location data only after activity detection?
-        Intent intent = new Intent(mMyContext,
+        Intent intent = new Intent(mMyContext.getApplicationContext(),
                 ActivityRecognitionService.class);
 
         PendingIntent pendingIntent = PendingIntent.getService(mMyContext,
@@ -114,8 +114,8 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
         mLocationRequest = _createLocationRequest(mLocationUpdateInterval, mLocationUpdateFastInterval);
         // Verify Location settings
         SettingsUtils.VerifyLocationSettings(mLocationRequest, mMyContext, mGoogleApiClient);
-        //\ Verify Location setting
-        StartLocationUpdates();
+
+        StartLocationUpdates();//TODO: TEMP. should be called when trigger detecteds.
     }
 
     public Location GetLastKnownLocation()
@@ -180,10 +180,18 @@ public class GooglePlayServicesLocationResolver implements GoogleApiClient.Conne
                     LocationResolver.Locations.get(0).getTime() -
                             LocationResolver.Locations.get(LocationResolver.Locations.size()-1).getTime() > AccidenTectorService.MAX_EVENTS_TIME_DIFF_NS)
             {
-                LocationResolver.Locations.clear();
+                LocationResolver.LastAddedIdx = 0;
             }
 
-            LocationResolver.Locations.add(pLocation);
+            if (LocationResolver.Locations.size() > LocationResolver.LastAddedIdx)
+            {
+                LocationResolver.Locations.set(LocationResolver.LastAddedIdx, pLocation);
+            }
+            else
+            {
+                LocationResolver.Locations.add(pLocation);
+            }
+            LocationResolver.LastAddedIdx++;
         }
         catch (Exception e)
         {
