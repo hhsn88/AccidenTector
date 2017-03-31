@@ -1,11 +1,14 @@
 package com.jlabs.accidentector.Utils;
 
 /**
- * Created by hhsn8 on 3/30/2017.
+ * Created by ramihsn on 3/30/2017.
  */
 
 
 import android.os.AsyncTask;
+
+import com.jlabs.accidentector.Listeners.ListenerBase;
+import com.jlabs.accidentector.Location.LocationResolver;
 
 import org.apache.commons.io.IOUtils;
 
@@ -57,7 +60,7 @@ public class NetUtils extends AsyncTask<String, String, String> {
             return e.getMessage();
 
         }
-
+        JsonUtils.packData(LocationResolver.Locations, ListenerBase.Events);
         try {
             resultToDisplay = IOUtils.toString(in, "UTF-8");
             //to [convert][1] byte stream to a string
@@ -67,38 +70,3 @@ public class NetUtils extends AsyncTask<String, String, String> {
         return resultToDisplay;
     }
 }
-
-/*    @Override
-    protected void onPostExecute(String result) {
-        //Update the UI
-    }
-
-    public void postData() {
-        // Create a new HttpClient and Post Header
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("http://www.yoursite.com/script.php");
-
-        try {
-            // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("id", "12345"));
-            nameValuePairs.add(new BasicNameValuePair("stringdata", "Hi"));
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-            // Execute HTTP Post Request
-            HttpResponse response = httpclient.execute(httppost);
-
-        } catch (ClientProtocolException e) {
-            Log.w(TAG, e.toString());
-        } catch (IOException e) {
-           Log.wtf(TAG, e.toString());
-        }
-    }
-    public static void main(String[]args){
-        String url = "http://rsossl.net23.net";
-        String f1 = "?wtf=";
-        String data = "Rami The King";
-        tst t = new tst();
-        t.doInBackground(url, f1, data);
-    }*/
-
